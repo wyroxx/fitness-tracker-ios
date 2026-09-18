@@ -2,11 +2,11 @@ import SwiftUI
 
 struct ExercisesView: View {
     let muscleGroup: MuscleGroup
-    @State private var viewModel: ExerciseViewModel
+    @State private var viewModel: ExercisesViewModel
     
-    init(muscleGroup: MuscleGroup, viewModel: ExerciseViewModel) {
+    init(muscleGroup: MuscleGroup, repository: ExerciseRepository) {
         self.muscleGroup = muscleGroup
-        _viewModel = State(initialValue: viewModel)
+        _viewModel = State(initialValue: ExercisesViewModel(repository: repository))
     }
     
     var body: some View {

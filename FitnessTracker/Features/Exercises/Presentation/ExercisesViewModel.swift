@@ -2,7 +2,7 @@ import Observation
 
 @MainActor
 @Observable
-final class ExerciseViewModel {
+final class ExercisesViewModel {
     private let repository: ExerciseRepository
     
     var isLoading: Bool = false
@@ -14,6 +14,10 @@ final class ExerciseViewModel {
     }
     
     func load(muscleGroupId: Int) async {
+        guard exercises.isEmpty else {
+            return
+        }
+        
         isLoading = true
         error = nil
         

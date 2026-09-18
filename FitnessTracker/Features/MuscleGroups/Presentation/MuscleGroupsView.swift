@@ -2,7 +2,7 @@ import SwiftUI
 
 struct MuscleGroupsView: View {
     @State private var viewModel: MuscleGroupsViewModel
-    @State private var exerciseViewModel: ExerciseViewModel
+    let exerciseRepository: ExerciseRepository
     
     let columns = [
         GridItem(.fixed(150), spacing: 16),
@@ -11,10 +11,10 @@ struct MuscleGroupsView: View {
     
     init(
         viewModel: MuscleGroupsViewModel,
-        exerciseViewModel: ExerciseViewModel
+        exerciseRepository: ExerciseRepository
     ) {
         _viewModel = State(initialValue: viewModel)
-        _exerciseViewModel = State(initialValue: exerciseViewModel)
+        self.exerciseRepository = exerciseRepository
     }
     
     var body: some View {
@@ -48,7 +48,7 @@ struct MuscleGroupsView: View {
                             NavigationLink {
                                 ExercisesView(
                                     muscleGroup: muscleGroup,
-                                    viewModel: exerciseViewModel
+                                    repository: exerciseRepository
                                 )
                             } label: {
                                 MuscleGroupCard(muscleGroup: muscleGroup)
