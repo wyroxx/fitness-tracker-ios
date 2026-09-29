@@ -8,7 +8,7 @@ struct FitnessTrackerApp: App {
     init() {
         let apiClient = APIClient(
             baseURL: "http://localhost:8080",
-            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo2LCJ0eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzg5NzIxODYzLCJpYXQiOjE3ODk3MjA5NjN9.e2HXc6xJw38YbnbRuQQbFiSgQRWNZZYfrBYpP2AOgeY"
+            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo2LCJ0eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzkwNjY5ODUyLCJpYXQiOjE3OTA2Njg5NTJ9.cBXcr6wYXeh6dyhqXUAwRoho0b6Y10qB9QDP4I502Ig"
         )
         
         self.exerciseRepository = ExerciseRepositoryImpl(apiClient: apiClient)
@@ -18,8 +18,8 @@ struct FitnessTrackerApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                MuscleGroupsView(
-                    viewModel: MuscleGroupsViewModel(
+                WorkoutEditorView(
+                    muscleGroupsViewModel: MuscleGroupsViewModel(
                         repository: muscleGroupRepository
                     ),
                     exerciseRepository: exerciseRepository
