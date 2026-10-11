@@ -3,6 +3,7 @@ import SwiftUI
 struct ExercisesView: View {
     let muscleGroup: MuscleGroup
     @State private var viewModel: ExercisesViewModel
+    @State private var selectedExercise: Exercise?
     
     init(muscleGroup: MuscleGroup, repository: ExerciseRepository) {
         self.muscleGroup = muscleGroup
@@ -32,8 +33,8 @@ struct ExercisesView: View {
                 ScrollView {
                     LazyVStack(spacing: 12) {
                         ForEach(viewModel.exercises, id: \.id) { exercise in
-                            NavigationLink {
-                                
+                            Button {
+                                selectedExercise = exercise
                             } label: {
                                 VStack(alignment: .leading, spacing: 6) {
                                     Text(exercise.name)
@@ -64,6 +65,30 @@ struct ExercisesView: View {
             ToolbarItem(placement: .principal) {
                 Text(muscleGroup.name)
                     .font(.system(size: 22, weight: .semibold))
+            }
+        }
+        .overlay {
+            if let exercise = selectedExercise {
+                ZStack {
+                    Color.black.opacity(0.35)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            selectedExercise = nil
+                        }
+
+                    WorkoutSetView(
+                        exercise: WorkoutExercise(
+                            id: exercise.id,
+                            name: exercise.name,
+                            sets: [
+                                WorkoutSet(setNumber: 1, weight: nil, reps: nil),
+                                WorkoutSet(setNumber: 2, weight: nil, reps: nil)
+                            ]
+                        )
+                    )
+                    .transition(.scale.combined(with: .opacity))
+                }
+                .animation(.easeInOut(duration: 0.2), value: selectedExercise != nil)
             }
         }
         .task {

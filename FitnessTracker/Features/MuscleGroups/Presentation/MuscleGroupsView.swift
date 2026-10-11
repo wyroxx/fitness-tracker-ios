@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct MuscleGroupsView: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var viewModel: MuscleGroupsViewModel
     let exerciseRepository: ExerciseRepository
     
@@ -61,6 +62,16 @@ struct MuscleGroupsView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 17, weight: .semibold))
+                }
+                .accessibilityLabel("Back")
+            }
+            
             ToolbarItem(placement: .principal) {
                 Text("Exercises")
                     .font(.system(size: 22, weight: .semibold))

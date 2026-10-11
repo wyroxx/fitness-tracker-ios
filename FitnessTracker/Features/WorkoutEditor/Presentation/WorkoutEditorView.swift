@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct WorkoutEditorView: View {
+    @State private var isSelectingExercise = false
     @State private var isPresented = false
     let muscleGroupsViewModel: MuscleGroupsViewModel
     let exerciseRepository: ExerciseRepository
@@ -33,13 +34,16 @@ struct WorkoutEditorView: View {
                 )
                 Spacer()
                 HStack(spacing: 60) {
-                    NavigationLink {
-                        MuscleGroupsView(
-                            viewModel: muscleGroupsViewModel,
-                            exerciseRepository: exerciseRepository
-                        )
-                    } label: {
-                        Text("Add exercise")
+                    Button("Add exercise") {
+                        isSelectingExercise = true
+                    }
+                    .fullScreenCover(isPresented: $isSelectingExercise) {
+                        NavigationStack {
+                            MuscleGroupsView(
+                                viewModel: muscleGroupsViewModel,
+                                exerciseRepository: exerciseRepository
+                            )
+                        }
                     }
                     Button("Save") {
                         
