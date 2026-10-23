@@ -8,7 +8,7 @@ struct FitnessTrackerApp: App {
     init() {
         let apiClient = APIClient(
             baseURL: "http://localhost:8080",
-            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo2LCJ0eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzkxNzI5ODYzLCJpYXQiOjE3OTE3Mjg5NjN9.bh0QSa5OUWJuXwh3oh4lhseM1VimHD4Ed5fusVTl9q8"
+            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo2LCJ0eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzkyNzYwMTkxLCJpYXQiOjE3OTI3NTkyOTF9.2yI_AevTEgi79aVUVIPEZ11ey_BTspkkxbG2DdI5rz0"
         )
         
         self.exerciseRepository = ExerciseRepositoryImpl(apiClient: apiClient)

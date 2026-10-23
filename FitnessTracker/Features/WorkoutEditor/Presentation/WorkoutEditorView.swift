@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct WorkoutEditorView: View {
+    @State private var workoutEditorViewModel = WorkoutEditorViewModel()
     @State private var isSelectingExercise = false
     @State private var isPresented = false
     let muscleGroupsViewModel: MuscleGroupsViewModel
@@ -15,24 +16,22 @@ struct WorkoutEditorView: View {
                 Text("New workout")
                     .font(.system(size: 22, weight: .semibold))
                     .padding(.vertical, 20)
-                WorkoutExerciseCard(
-                    exercise: WorkoutExercise(
-                        id: 1,
-                        name: "Bench Press",
-                        sets: [
-                            WorkoutSet(
-                                setNumber: 1, weight: 40, reps: 12
-                            ),
-                            WorkoutSet(
-                                setNumber: 2, weight: 50, reps: 11
-                            ),
-                            WorkoutSet(
-                                setNumber: 3, weight: 60, reps: 11
-                            )
-                        ]
-                    )
-                )
-                Spacer()
+                if workoutEditorViewModel.exercises.isEmpty {
+                    Text("Add your first exercise")
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            ForEach(workoutEditorViewModel.exercises.indices, id: \.self) { index in
+                                WorkoutExerciseCard(
+                                    exercise: workoutEditorViewModel.exercises[index]
+                                )
+                            }
+                        }
+                        .padding(.vertical, 8)
+                    }
+                }
                 HStack(spacing: 60) {
                     Button("Add exercise") {
                         isSelectingExercise = true
@@ -41,7 +40,11 @@ struct WorkoutEditorView: View {
                         NavigationStack {
                             MuscleGroupsView(
                                 viewModel: muscleGroupsViewModel,
-                                exerciseRepository: exerciseRepository
+                                exerciseRepository: exerciseRepository,
+                                onExerciseAdded: { exercise in
+                                    workoutEditorViewModel.exercises.append(exercise)
+                                    isSelectingExercise = false
+                                }
                             )
                         }
                     }

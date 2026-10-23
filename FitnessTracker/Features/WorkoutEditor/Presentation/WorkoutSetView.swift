@@ -2,13 +2,19 @@ import SwiftUI
 
 struct WorkoutSetView: View {
     let exercise: WorkoutExercise
-    
-    @Environment(\.dismiss) private var dismiss
+    let onSave: (WorkoutExercise) -> Void
+    let onCancel: () -> Void
     
     @State private var sets: [WorkoutSet]
 
-    init(exercise: WorkoutExercise) {
+    init(
+        exercise: WorkoutExercise,
+        onSave: @escaping (WorkoutExercise) -> Void,
+        onCancel: @escaping () -> Void
+    ) {
         self.exercise = exercise
+        self.onSave = onSave
+        self.onCancel = onCancel
         _sets = State(initialValue: exercise.sets)
     }
     
@@ -19,7 +25,7 @@ struct WorkoutSetView: View {
                     .font(.system(size: 20, weight: .medium))
                 Spacer()
                 Button {
-                    dismiss()
+                    onCancel()
                 } label: {
                     Image(systemName: "xmark")
                         .font(.system(size: 16, weight: .semibold))
@@ -52,7 +58,12 @@ struct WorkoutSetView: View {
                 }
                 
                 Button("Save") {
-                    
+                    let updatedExercise = WorkoutExercise(
+                        id: exercise.id,
+                        name: exercise.name,
+                        sets: sets
+                    )
+                    onSave(updatedExercise)
                 }
                 .foregroundStyle(.white)
                 .padding(EdgeInsets(top: 10, leading: 18, bottom: 10, trailing: 18))
@@ -75,17 +86,4 @@ struct WorkoutSetView: View {
         .shadow(color: .black.opacity(0.12), radius: 8)
         .padding(.horizontal, 32)
     }
-}
-
-#Preview {
-    WorkoutSetView(
-        exercise: WorkoutExercise(
-            id: 1,
-            name: "Bench Press",
-            sets: [
-                WorkoutSet(setNumber: 1, weight: 60, reps: 12),
-                WorkoutSet(setNumber: 2, weight: 65, reps: 11),
-            ]
-        )
-    )
 }

@@ -2,11 +2,17 @@ import SwiftUI
 
 struct ExercisesView: View {
     let muscleGroup: MuscleGroup
+    let onExerciseAdded: (WorkoutExercise) -> Void
     @State private var viewModel: ExercisesViewModel
     @State private var selectedExercise: Exercise?
     
-    init(muscleGroup: MuscleGroup, repository: ExerciseRepository) {
+    init(
+        muscleGroup: MuscleGroup,
+        repository: ExerciseRepository,
+        onExerciseAdded: @escaping (WorkoutExercise) -> Void
+    ) {
         self.muscleGroup = muscleGroup
+        self.onExerciseAdded = onExerciseAdded
         _viewModel = State(initialValue: ExercisesViewModel(repository: repository))
     }
     
@@ -84,7 +90,14 @@ struct ExercisesView: View {
                                 WorkoutSet(setNumber: 1, weight: nil, reps: nil),
                                 WorkoutSet(setNumber: 2, weight: nil, reps: nil)
                             ]
-                        )
+                        ),
+                        onSave: { updatedExercise in
+                            onExerciseAdded(updatedExercise)
+                            selectedExercise = nil
+                        },
+                        onCancel: {
+                            selectedExercise = nil
+                        }
                     )
                     .transition(.scale.combined(with: .opacity))
                 }

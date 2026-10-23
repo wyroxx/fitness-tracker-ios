@@ -37,10 +37,3 @@ struct WorkoutSetCard: View {
         }
     }
 }
-
-#Preview {
-    @Previewable @State var set = WorkoutSet(setNumber: 1)
-    WorkoutSetCard(
-        set: $set
-    )
-}
