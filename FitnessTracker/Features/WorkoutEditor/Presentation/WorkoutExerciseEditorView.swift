@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct WorkoutSetView: View {
+struct WorkoutExerciseEditorView: View {
     let exercise: WorkoutExercise
     let onSave: (WorkoutExercise) -> Void
     let onCancel: () -> Void

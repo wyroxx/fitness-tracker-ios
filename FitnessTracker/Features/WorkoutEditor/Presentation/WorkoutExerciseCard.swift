@@ -24,23 +24,3 @@ struct WorkoutExerciseCard: View {
         .padding(.horizontal, 24)
     }
 }
-
-#Preview {
-    WorkoutExerciseCard(
-        exercise: WorkoutExercise(
-            id: 1,
-            name: "Bench Press",
-            sets: [
-                WorkoutSet(
-                    setNumber: 1, weight: 40, reps: 12
-                ),
-                WorkoutSet(
-                    setNumber: 2, weight: 50, reps: 11
-                ),
-                WorkoutSet(
-                    setNumber: 3, weight: 60, reps: 11
-                )
-            ]
-        )
-    )
-}

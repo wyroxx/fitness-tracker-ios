@@ -82,7 +82,7 @@ struct ExercisesView: View {
                             selectedExercise = nil
                         }
 
-                    WorkoutSetView(
+                    WorkoutExerciseEditorView(
                         exercise: WorkoutExercise(
                             id: exercise.id,
                             name: exercise.name,
