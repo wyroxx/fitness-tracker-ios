@@ -1,8 +1,10 @@
 import SwiftUI
 
 struct MuscleGroupsView: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var viewModel: MuscleGroupsViewModel
     let exerciseRepository: ExerciseRepository
+    let onExerciseAdded: (WorkoutExercise) -> Void
     
     let columns = [
         GridItem(.fixed(150), spacing: 16),
@@ -11,10 +13,12 @@ struct MuscleGroupsView: View {
     
     init(
         viewModel: MuscleGroupsViewModel,
-        exerciseRepository: ExerciseRepository
+        exerciseRepository: ExerciseRepository,
+        onExerciseAdded: @escaping (WorkoutExercise) -> Void
     ) {
         _viewModel = State(initialValue: viewModel)
         self.exerciseRepository = exerciseRepository
+        self.onExerciseAdded = onExerciseAdded
     }
     
     var body: some View {
@@ -48,7 +52,8 @@ struct MuscleGroupsView: View {
                             NavigationLink {
                                 ExercisesView(
                                     muscleGroup: muscleGroup,
-                                    repository: exerciseRepository
+                                    repository: exerciseRepository,
+                                    onExerciseAdded: onExerciseAdded
                                 )
                             } label: {
                                 MuscleGroupCard(muscleGroup: muscleGroup)
@@ -61,6 +66,16 @@ struct MuscleGroupsView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 17, weight: .semibold))
+                }
+                .accessibilityLabel("Back")
+            }
+            
             ToolbarItem(placement: .principal) {
                 Text("Exercises")
                     .font(.system(size: 22, weight: .semibold))
