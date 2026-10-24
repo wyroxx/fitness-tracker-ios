@@ -4,6 +4,7 @@ import SwiftUI
 struct FitnessTrackerApp: App {
     private let exerciseRepository: ExerciseRepository
     private let muscleGroupRepository: MuscleGroupRepository
+    private let workoutRepository: WorkoutRepository
     
     init() {
         let apiClient = APIClient(
@@ -13,12 +14,17 @@ struct FitnessTrackerApp: App {
         
         self.exerciseRepository = ExerciseRepositoryImpl(apiClient: apiClient)
         self.muscleGroupRepository = MuscleGroupRepositoryImpl(apiClient: apiClient)
+        self.workoutRepository = WorkoutRepositoryImpl(apiClient: apiClient)
     }
     
     var body: some Scene {
         WindowGroup {
             NavigationStack {
                 WorkoutsView(
+                    viewModel: WorkoutsViewModel(
+                        workouts: [],
+                        repository: workoutRepository
+                    ),
                     muscleGroupsViewModel: MuscleGroupsViewModel(
                         repository: muscleGroupRepository
                     ),

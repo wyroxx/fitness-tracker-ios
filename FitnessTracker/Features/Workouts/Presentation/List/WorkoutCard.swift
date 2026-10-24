@@ -76,62 +76,6 @@ struct WorkoutCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(.white)
         .clipShape(RoundedRectangle(cornerRadius: 18))
-        .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
+        .shadow(color: .black.opacity(0.12), radius: 12, x: 0, y: 4)
     }
-}
-
-#Preview {
-    WorkoutCard(
-        workout: Workout(
-            title: "Chest & Triceps",
-            startedAt: "Oct 27, Tue",
-            exercises: [
-                WorkoutExercise(
-                    id: 1,
-                    name: "Bench Press",
-                    sets: [
-                        WorkoutSet(
-                            setNumber: 1,
-                            weight: 60,
-                            reps: 10
-                        ),
-                        WorkoutSet(
-                            setNumber: 2,
-                            weight: 65,
-                            reps: 10
-                        ),
-                        WorkoutSet(
-                            setNumber: 3,
-                            weight: 65,
-                            reps: 9
-                        ),
-                    ]
-                ),
-                WorkoutExercise(
-                    id: 2,
-                    name: "Chest Fly",
-                    sets: [
-                        WorkoutSet(
-                            setNumber: 1,
-                            weight: 45,
-                            reps: 12
-                        ),
-                        WorkoutSet(
-                            setNumber: 2,
-                            weight: 45,
-                            reps: 11
-                        ),
-                        WorkoutSet(
-                            setNumber: 3,
-                            weight: 50,
-                            reps: 9
-                        ),
-                    ]
-                ),
-            ]
-        )
-    )
-    .padding()
-    .frame(maxHeight: .infinity, alignment: .top)
-    .background(Color(.systemGroupedBackground))
 }

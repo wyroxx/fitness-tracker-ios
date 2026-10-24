@@ -3,7 +3,31 @@ import Observation
 @MainActor
 @Observable
 final class WorkoutsViewModel {
-    var workouts: [Workout] = []
+    private let repository: WorkoutRepository
 
-    // TODO: Inject WorkoutRepository and implement loading and saving.
+    var workouts: [Workout] = []
+    var isLoading: Bool = false
+    var error: Error?
+
+    init(workouts: [Workout], repository: WorkoutRepository) {
+        self.workouts = workouts
+        self.repository = repository
+    }
+
+    func load() async {
+        guard workouts.isEmpty else {
+            return
+        }
+
+        isLoading = true
+        error = nil
+
+        do {
+            workouts = try await repository.getWorkouts()
+        } catch {
+            self.error = error
+        }
+
+        isLoading = false
+    }
 }
