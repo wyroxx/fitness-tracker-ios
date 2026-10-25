@@ -8,9 +8,6 @@ struct WorkoutsView: View {
     let exerciseRepository: ExerciseRepository
     let workoutRepository: WorkoutRepository
 
-    // Temporary: set to false to display the repository results.
-    private let useMockData = true
-
     init(
         viewModel: WorkoutsViewModel,
         muscleGroupsViewModel: MuscleGroupsViewModel,
@@ -23,18 +20,14 @@ struct WorkoutsView: View {
         self.workoutRepository = workoutRepository
     }
 
-    private var displayedWorkouts: [Workout] {
-        useMockData ? Self.mockWorkouts : viewModel.workouts
-    }
-
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
-                if !useMockData && viewModel.isLoading {
+                if viewModel.isLoading {
                     ProgressView()
                         .frame(maxWidth: .infinity)
                         .padding(.top, 32)
-                } else if !useMockData, let error = viewModel.error {
+                } else if let error = viewModel.error {
                     VStack(spacing: 12) {
                         Text("Failed to load workouts")
                             .font(.headline)
@@ -49,14 +42,14 @@ struct WorkoutsView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.top, 32)
-                } else if displayedWorkouts.isEmpty {
+                } else if viewModel.workouts.isEmpty {
                     Text("No workouts yet")
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity)
                         .padding(.top, 32)
                 } else {
-                    ForEach(displayedWorkouts.indices, id: \.self) { index in
-                        WorkoutCard(workout: displayedWorkouts[index])
+                    ForEach(viewModel.workouts.indices, id: \.self) { index in
+                        WorkoutCard(workout: viewModel.workouts[index])
                     }
                 }
             }
@@ -113,39 +106,6 @@ struct WorkoutsView: View {
             .presentationDetents([.medium, .large])
         }
     }
-
-    private static let mockWorkouts: [Workout] = [
-        Workout(
-            title: "Upper",
-            startedAt: "Oct 24, Sat",
-            exercises: [
-                WorkoutExercise(id: 1, name: "Bench Press", sets: [
-                    WorkoutSet(setNumber: 1, weight: 60, reps: 12),
-                    WorkoutSet(setNumber: 2, weight: 65, reps: 10),
-                    WorkoutSet(setNumber: 3, weight: 65, reps: 9)
-                ]),
-                WorkoutExercise(id: 2, name: "Cable chest fly", sets: [
-                    WorkoutSet(setNumber: 1, weight: 20, reps: 12),
-                    WorkoutSet(setNumber: 2, weight: 25, reps: 10)
-                ])
-            ]
-        ),
-        Workout(
-            title: "Lower",
-            startedAt: "Oct 22, Thu",
-            exercises: [
-                WorkoutExercise(id: 3, name: "Leg press", sets: [
-                    WorkoutSet(setNumber: 1, weight: 70, reps: 14),
-                    WorkoutSet(setNumber: 2, weight: 80, reps: 12),
-                    WorkoutSet(setNumber: 3, weight: 80, reps: 10)
-                ]),
-                WorkoutExercise(id: 4, name: "Romanian deadlift", sets: [
-                    WorkoutSet(setNumber: 1, weight: 40, reps: 12),
-                    WorkoutSet(setNumber: 2, weight: 45, reps: 10)
-                ])
-            ]
-        )
-    ]
 }
 
 private struct AddWorkoutButtonStyle: ButtonStyle {

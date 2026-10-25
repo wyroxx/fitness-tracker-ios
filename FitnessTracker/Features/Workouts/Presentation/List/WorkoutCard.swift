@@ -4,6 +4,27 @@ struct WorkoutCard: View {
     let workout: Workout
     @State private var expandedExerciseIndices: Set<Int> = []
 
+    private static let fractionalDateParser: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
+
+    private static let dateParser = ISO8601DateFormatter()
+
+    private var formattedDate: String {
+        guard let date = Self.fractionalDateParser.date(from: workout.startedAt)
+            ?? Self.dateParser.date(from: workout.startedAt) else {
+            return workout.startedAt
+        }
+
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = .autoupdatingCurrent
+        formatter.dateFormat = "MMM d, EEE"
+        return formatter.string(from: date)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .firstTextBaseline, spacing: 12) {
@@ -14,7 +35,7 @@ struct WorkoutCard: View {
 
                 Spacer(minLength: 0)
 
-                Text(workout.startedAt)
+                Text(formattedDate)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
