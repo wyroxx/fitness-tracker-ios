@@ -6,6 +6,7 @@ struct WorkoutsView: View {
 
     let muscleGroupsViewModel: MuscleGroupsViewModel
     let exerciseRepository: ExerciseRepository
+    let workoutRepository: WorkoutRepository
 
     // Temporary: set to false to display the repository results.
     private let useMockData = true
@@ -13,11 +14,13 @@ struct WorkoutsView: View {
     init(
         viewModel: WorkoutsViewModel,
         muscleGroupsViewModel: MuscleGroupsViewModel,
-        exerciseRepository: ExerciseRepository
+        exerciseRepository: ExerciseRepository,
+        workoutRepository: WorkoutRepository
     ) {
         _viewModel = State(initialValue: viewModel)
         self.muscleGroupsViewModel = muscleGroupsViewModel
         self.exerciseRepository = exerciseRepository
+        self.workoutRepository = workoutRepository
     }
 
     private var displayedWorkouts: [Workout] {
@@ -96,12 +99,18 @@ struct WorkoutsView: View {
         }
         .sheet(isPresented: $isWorkoutEditorPresented) {
             WorkoutEditorView(
+                viewModel: WorkoutEditorViewModel(repository: workoutRepository),
                 muscleGroupsViewModel: muscleGroupsViewModel,
-                exerciseRepository: exerciseRepository
+                exerciseRepository: exerciseRepository,
+                onSaved: {
+                    isWorkoutEditorPresented = false
+                    Task {
+                        await viewModel.load(force: true)
+                    }
+                }
             )
             .presentationBackground(.white)
             .presentationDetents([.medium, .large])
-            // TODO: Handle the editor's save callback when workout saving is implemented.
         }
     }
 

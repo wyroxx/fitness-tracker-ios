@@ -28,7 +28,8 @@ struct FitnessTrackerApp: App {
                     muscleGroupsViewModel: MuscleGroupsViewModel(
                         repository: muscleGroupRepository
                     ),
-                    exerciseRepository: exerciseRepository
+                    exerciseRepository: exerciseRepository,
+                    workoutRepository: workoutRepository
                 )
             }
         }

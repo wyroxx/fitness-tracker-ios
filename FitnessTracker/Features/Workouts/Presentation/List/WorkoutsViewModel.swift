@@ -14,8 +14,9 @@ final class WorkoutsViewModel {
         self.repository = repository
     }
 
-    func load() async {
-        guard workouts.isEmpty else {
+    func load(force: Bool = false) async {
+        guard !isLoading else { return }
+        guard force || workouts.isEmpty else {
             return
         }
 

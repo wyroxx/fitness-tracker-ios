@@ -1,14 +1,28 @@
 import SwiftUI
 
 struct WorkoutEditorView: View {
-    @State private var workoutEditorViewModel = WorkoutEditorViewModel()
+    @State private var workoutEditorViewModel: WorkoutEditorViewModel
     @State private var isSelectingExercise = false
     let muscleGroupsViewModel: MuscleGroupsViewModel
     let exerciseRepository: ExerciseRepository
+    let onSaved: () -> Void
+
+    init(
+        viewModel: WorkoutEditorViewModel,
+        muscleGroupsViewModel: MuscleGroupsViewModel,
+        exerciseRepository: ExerciseRepository,
+        onSaved: @escaping () -> Void
+    ) {
+        _workoutEditorViewModel = State(initialValue: viewModel)
+        self.muscleGroupsViewModel = muscleGroupsViewModel
+        self.exerciseRepository = exerciseRepository
+        self.onSaved = onSaved
+    }
 
     var body: some View {
         VStack(spacing: 8) {
-            Text("New workout")
+            TextField("Workout name", text: $workoutEditorViewModel.title)
+                .multilineTextAlignment(.center)
                 .font(.system(size: 22, weight: .semibold))
                 .padding(.vertical, 20)
             if workoutEditorViewModel.exercises.isEmpty {
@@ -27,6 +41,12 @@ struct WorkoutEditorView: View {
                     .padding(.vertical, 8)
                 }
             }
+            if let error = workoutEditorViewModel.error {
+                Text(error.localizedDescription)
+                    .font(.footnote)
+                    .foregroundStyle(.red)
+                    .padding(.horizontal)
+            }
             HStack(spacing: 60) {
                 Button("Add exercise") {
                     isSelectingExercise = true
@@ -43,9 +63,14 @@ struct WorkoutEditorView: View {
                         )
                     }
                 }
-                Button("Save") {
-
+                Button(workoutEditorViewModel.isSaving ? "Saving…" : "Save") {
+                    Task {
+                        if await workoutEditorViewModel.save() {
+                            onSaved()
+                        }
+                    }
                 }
+                .disabled(!workoutEditorViewModel.canSave)
                 .foregroundStyle(.white)
                 .padding(EdgeInsets(top: 10, leading: 18, bottom: 10, trailing: 18))
                 .background(
@@ -61,5 +86,7 @@ struct WorkoutEditorView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16))
             }
         }
+        .disabled(workoutEditorViewModel.isSaving)
+        .interactiveDismissDisabled(workoutEditorViewModel.isSaving)
     }
 }
