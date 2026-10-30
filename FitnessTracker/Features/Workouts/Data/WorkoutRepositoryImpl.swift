@@ -15,6 +15,6 @@ struct WorkoutRepositoryImpl: WorkoutRepository {
             startedAt: workout.startedAt,
             sessions: [workout]
         )
-        try await apiClient.post("/trainings", body: request)
+        let _: IgnoredResponse = try await apiClient.post("/trainings", body: request)
     }
 }

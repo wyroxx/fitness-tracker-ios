@@ -2,6 +2,9 @@ import SwiftUI
 
 @main
 struct FitnessTrackerApp: App {
+    // Start signed out until session restoration is implemented.
+    @State private var sessionStore = SessionStore(state: .signedOut)
+
     private let exerciseRepository: ExerciseRepository
     private let muscleGroupRepository: MuscleGroupRepository
     private let workoutRepository: WorkoutRepository
@@ -19,19 +22,12 @@ struct FitnessTrackerApp: App {
     
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
-                WorkoutsView(
-                    viewModel: WorkoutsViewModel(
-                        workouts: [],
-                        repository: workoutRepository
-                    ),
-                    muscleGroupsViewModel: MuscleGroupsViewModel(
-                        repository: muscleGroupRepository
-                    ),
-                    exerciseRepository: exerciseRepository,
-                    workoutRepository: workoutRepository
-                )
-            }
+            RootView(
+                sessionStore: sessionStore,
+                exerciseRepository: exerciseRepository,
+                muscleGroupRepository: muscleGroupRepository,
+                workoutRepository: workoutRepository
+            )
         }
     }
 }
