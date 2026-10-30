@@ -4,11 +4,11 @@ struct IgnoredResponse: Decodable {}
 
 final class APIClient {
     private let baseURL: String
-    private let token: String
+    private let tokenStorage: TokenStorage
     
-    init(baseURL: String, token: String) {
+    init(baseURL: String, tokenStorage: TokenStorage) {
         self.baseURL = baseURL
-        self.token = token
+        self.tokenStorage = tokenStorage
     }
     
     func get<T: Decodable>(_ endpoint: String) async throws -> T {
@@ -18,7 +18,7 @@ final class APIClient {
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        try authorize(&request)
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
@@ -52,7 +52,7 @@ final class APIClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         if requiresAuth {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            try authorize(&request)
         }
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
@@ -81,6 +81,12 @@ final class APIClient {
         } catch {
             throw APIError.decodingError
         }
+    }
+    private func authorize(_ request: inout URLRequest) throws {
+        guard let tokens = try tokenStorage.read(), !tokens.accessToken.isEmpty else {
+            throw APIError.missingAccessToken
+        }
+        request.setValue("Bearer \(tokens.accessToken)", forHTTPHeaderField: "Authorization")
     }
 }
 

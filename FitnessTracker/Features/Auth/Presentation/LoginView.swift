@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct LoginView: View {
+    var isLoading = false
+    var errorMessage: String?
     var onSignIn: (_ email: String, _ password: String) -> Void = { _, _ in }
     var onSignUp: () -> Void = {}
 
@@ -50,8 +52,20 @@ struct LoginView: View {
                                 .accessibilityLabel("Password")
                                 .modifier(LoginFieldStyle())
 
+                            if let errorMessage {
+                                Text(errorMessage)
+                                    .font(.footnote)
+                                    .foregroundStyle(.red)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+
                             Button(action: signIn) {
-                                Text("Sign in")
+                                HStack(spacing: 8) {
+                                    if isLoading {
+                                        ProgressView().tint(.white)
+                                    }
+                                    Text(isLoading ? "Signing in…" : "Sign in")
+                                }
                                     .font(.system(size: 16, weight: .medium))
                                     .foregroundStyle(.white)
                                     .frame(maxWidth: .infinity)
@@ -67,6 +81,7 @@ struct LoginView: View {
                             }
                             .buttonStyle(.plain)
                         }
+                        .disabled(isLoading)
                     }
                     .frame(maxWidth: 420)
 
@@ -103,12 +118,13 @@ struct LoginView: View {
             .foregroundStyle(accent)
             .buttonStyle(.plain)
             .frame(minHeight: 44)
+            .disabled(isLoading)
     }
 
     private func signIn() {
+        guard !isLoading else { return }
         focusedField = nil
         let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedEmail.isEmpty, !password.isEmpty else { return }
         onSignIn(trimmedEmail, password)
     }
 }
