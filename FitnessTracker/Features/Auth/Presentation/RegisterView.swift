@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct RegisterView: View {
+    var isLoading = false
+    var errorMessage: String?
     var onSignUp: (_ name: String, _ email: String, _ password: String) -> Void = { _, _, _ in }
     var onSignIn: () -> Void = {}
 
@@ -29,7 +31,7 @@ struct RegisterView: View {
                     VStack(spacing: 20) {
                         VStack(spacing: 4) {
                             Text("Let’s get started!")
-                            Text("Sign ") + Text("up").foregroundColor(accent)
+                            Text("Sign \(Text("up").foregroundStyle(accent))")
                         }
                         .font(.system(size: 24, weight: .semibold))
                         .multilineTextAlignment(.center)
@@ -72,8 +74,8 @@ struct RegisterView: View {
                                 .accessibilityLabel("Confirm password")
                                 .modifier(RegisterFieldStyle())
 
-                            if let validationMessage {
-                                Text(validationMessage)
+                            if let message = validationMessage ?? errorMessage {
+                                Text(message)
                                     .font(.footnote)
                                     .foregroundStyle(.red)
                                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -95,7 +97,9 @@ struct RegisterView: View {
                                     )
                             }
                             .buttonStyle(.plain)
+                            .brightness(isLoading ? -0.12 : 0)
                         }
+                        .disabled(isLoading)
                     }
                     .frame(maxWidth: 420)
 
@@ -129,12 +133,14 @@ struct RegisterView: View {
 
     private var signInButton: some View {
         Button("Sign in", action: onSignIn)
+            .disabled(isLoading)
             .foregroundStyle(accent)
             .buttonStyle(.plain)
             .frame(minHeight: 44)
     }
 
     private func signUp() {
+        guard !isLoading else { return }
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty, !trimmedEmail.isEmpty,

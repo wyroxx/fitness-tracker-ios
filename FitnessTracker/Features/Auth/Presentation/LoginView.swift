@@ -26,7 +26,7 @@ struct LoginView: View {
                     VStack(spacing: 20) {
                         VStack(spacing: 4) {
                             Text("Welcome back!")
-                            Text("Sign ") + Text("in").foregroundColor(accent)
+                            Text("Sign \(Text("in").foregroundStyle(accent))")
                         }
                         .font(.system(size: 24, weight: .semibold))
                         .multilineTextAlignment(.center)
@@ -60,12 +60,7 @@ struct LoginView: View {
                             }
 
                             Button(action: signIn) {
-                                HStack(spacing: 8) {
-                                    if isLoading {
-                                        ProgressView().tint(.white)
-                                    }
-                                    Text(isLoading ? "Signing in…" : "Sign in")
-                                }
+                                Text("Sign in")
                                     .font(.system(size: 16, weight: .medium))
                                     .foregroundStyle(.white)
                                     .frame(maxWidth: .infinity)
@@ -80,6 +75,7 @@ struct LoginView: View {
                                     )
                             }
                             .buttonStyle(.plain)
+                            .brightness(isLoading ? -0.12 : 0)
                         }
                         .disabled(isLoading)
                     }

@@ -16,9 +16,24 @@ struct AuthRepositoryImpl: AuthRepository {
         )
         try storage.save(tokens)
     }
+    
+    func register(name: String, email: String, password: String) async throws {
+        let request = RegisterRequest(name: name, email: email, password: password)
+        let _: IgnoredResponse = try await apiClient.post(
+            "/users",
+            body: request,
+            requiresAuth: false
+        )
+    }
 }
 
 struct LoginRequest: Encodable {
+    let email: String
+    let password: String
+}
+
+struct RegisterRequest: Encodable {
+    let name: String
     let email: String
     let password: String
 }

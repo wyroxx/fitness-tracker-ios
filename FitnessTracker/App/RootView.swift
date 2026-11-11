@@ -34,31 +34,62 @@ struct RootView: View {
 }
 
 private struct AuthFlowView: View {
-    @State private var showsRegistration = false
+    private enum AuthScreen {
+        case login
+        case register
+    }
+
+    @State private var screen: AuthScreen = .login
     @State private var loginViewModel: LoginViewModel
+    @State private var registerViewModel: RegisterViewModel
 
     init(repository: AuthRepository, sessionStore: SessionStore) {
         _loginViewModel = State(initialValue: LoginViewModel(
             repository: repository,
             sessionStore: sessionStore
         ))
+        _registerViewModel = State(
+            initialValue: RegisterViewModel(repository: repository)
+        )
     }
 
     var body: some View {
-        NavigationStack {
-            LoginView(
-                isLoading: loginViewModel.isLoading,
-                errorMessage: loginViewModel.errorMessage,
-                onSignIn: { email, password in
-                    Task {
-                        await loginViewModel.login(email: email, password: password)
-                    }
-                },
-                onSignUp: { showsRegistration = true }
-            )
-                .navigationDestination(isPresented: $showsRegistration) {
-                    RegisterView(onSignIn: { showsRegistration = false })
-                }
+        ZStack {
+            switch screen {
+            case .login:
+                LoginView(
+                    isLoading: loginViewModel.isLoading,
+                    errorMessage: loginViewModel.errorMessage,
+                    onSignIn: { email, password in
+                        Task {
+                            await loginViewModel.login(email: email, password: password)
+                        }
+                    },
+                    onSignUp: { screen = .register }
+                )
+                .transition(.opacity)
+
+            case .register:
+                RegisterView(
+                    isLoading: registerViewModel.isLoading,
+                    errorMessage: registerViewModel.errorMessage,
+                    onSignUp: { name, email, password in
+                        Task {
+                            let success = await registerViewModel.register(
+                                name: name,
+                                email: email,
+                                password: password
+                            )
+                            if success {
+                                screen = .login
+                            }
+                        }
+                    },
+                    onSignIn: { screen = .login }
+                )
+                .transition(.opacity)
+            }
         }
+        .animation(.easeInOut(duration: 0.2), value: screen)
     }
 }
