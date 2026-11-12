@@ -5,10 +5,12 @@ struct IgnoredResponse: Decodable {}
 final class APIClient {
     private let baseURL: String
     private let tokenStorage: TokenStorage
+    private let refreshCoordinator: TokenRefreshCoordinator
     
-    init(baseURL: String, tokenStorage: TokenStorage) {
+    init(baseURL: String, tokenStorage: TokenStorage, refreshCoordinator: TokenRefreshCoordinator) {
         self.baseURL = baseURL
         self.tokenStorage = tokenStorage
+        self.refreshCoordinator = refreshCoordinator
     }
     
     func get<T: Decodable>(_ endpoint: String) async throws -> T {
@@ -80,7 +82,9 @@ final class APIClient {
         }
         
         if httpResponse.statusCode == 401 && requiresAuth {
-            try await refreshTokens()
+            let rejectedToken = request.value(forHTTPHeaderField: "Authorization")?
+                .replacingOccurrences(of: "Bearer ", with: "", options: .anchored)
+            try await refreshCoordinator.refresh(rejectedAccessToken: rejectedToken)
             try authorize(&request)
             
             let (retryData, retryResponse) = try await URLSession.shared.data(for: request)
@@ -102,21 +106,4 @@ final class APIClient {
         return data
     }
     
-    private func refreshTokens() async throws {
-        guard let tokens = try tokenStorage.read(), !tokens.refreshToken.isEmpty else {
-            throw APIError.missingAccessToken
-        }
-
-        let newTokens: AuthTokens = try await post(
-            "/auth/refresh",
-            body: RefreshRequest(refreshToken: tokens.refreshToken),
-            requiresAuth: false
-        )
-
-        try tokenStorage.save(newTokens)
-    }
-}
-
-private struct RefreshRequest: Encodable {
-    let refreshToken: String
 }

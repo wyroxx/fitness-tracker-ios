@@ -2,7 +2,7 @@ import SwiftUI
 
 @main
 struct FitnessTrackerApp: App {
-    @State private var sessionStore = SessionStore(state: .unknown)
+    @State private var sessionStore: SessionStore
 
     private let authRepository: AuthRepository
     private let exerciseRepository: ExerciseRepository
@@ -11,12 +11,21 @@ struct FitnessTrackerApp: App {
     
     init() {
         let storage = KeychainTokenStorage()
+        let baseURL = "http://localhost:8080"
+        let refreshCoordinator = TokenRefreshCoordinator(baseURL: baseURL, storage: storage)
         let apiClient = APIClient(
-            baseURL: "http://localhost:8080",
-            tokenStorage: storage
+            baseURL: baseURL,
+            tokenStorage: storage,
+            refreshCoordinator: refreshCoordinator
         )
         
-        self.authRepository = AuthRepositoryImpl(storage: storage, apiClient: apiClient)
+        let authRepository = AuthRepositoryImpl(
+            storage: storage,
+            apiClient: apiClient,
+            refreshCoordinator: refreshCoordinator
+        )
+        self.authRepository = authRepository
+        _sessionStore = State(initialValue: SessionStore(repository: authRepository))
         self.exerciseRepository = ExerciseRepositoryImpl(apiClient: apiClient)
         self.muscleGroupRepository = MuscleGroupRepositoryImpl(apiClient: apiClient)
         self.workoutRepository = WorkoutRepositoryImpl(apiClient: apiClient)
@@ -31,6 +40,9 @@ struct FitnessTrackerApp: App {
                 muscleGroupRepository: muscleGroupRepository,
                 workoutRepository: workoutRepository
             )
+            .task {
+                await sessionStore.restore()
+            }
         }
     }
 }

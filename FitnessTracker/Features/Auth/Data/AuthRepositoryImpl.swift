@@ -1,10 +1,12 @@
 struct AuthRepositoryImpl: AuthRepository {
     private let storage: TokenStorage
     private let apiClient: APIClient
+    private let refreshCoordinator: TokenRefreshCoordinator
     
-    init(storage: TokenStorage, apiClient: APIClient) {
+    init(storage: TokenStorage, apiClient: APIClient, refreshCoordinator: TokenRefreshCoordinator) {
         self.storage = storage
         self.apiClient = apiClient
+        self.refreshCoordinator = refreshCoordinator
     }
     
     func login(email: String, password: String) async throws {
@@ -24,6 +26,21 @@ struct AuthRepositoryImpl: AuthRepository {
             body: request,
             requiresAuth: false
         )
+    }
+    
+    func restoreSession() async throws -> Bool {
+        guard let tokens = try storage.read() else { return false }
+        guard !tokens.refreshToken.isEmpty else {
+            try storage.clear()
+            return false
+        }
+        do {
+            try await refreshCoordinator.refresh()
+            return true
+        } catch APIError.httpError(statusCode: 401) {
+            try storage.clear()
+            return false
+        }
     }
 }
 

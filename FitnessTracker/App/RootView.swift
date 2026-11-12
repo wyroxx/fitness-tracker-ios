@@ -10,7 +10,18 @@ struct RootView: View {
     var body: some View {
         switch sessionStore.state {
         case .unknown:
-            ProgressView()
+            if let error = sessionStore.restorationError {
+                VStack(spacing: 16) {
+                    Text(error)
+                        .multilineTextAlignment(.center)
+                    Button("Retry") {
+                        Task { await sessionStore.restore() }
+                    }
+                }
+                .padding()
+            } else {
+                ProgressView()
+            }
 
         case .signedOut:
             AuthFlowView(repository: authRepository, sessionStore: sessionStore)
