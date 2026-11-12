@@ -54,7 +54,6 @@ struct WorkoutsView: View {
                 }
             }
             .padding()
-            .padding(.bottom, 88)
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -62,33 +61,17 @@ struct WorkoutsView: View {
                 Text("My Trainings")
                     .font(.system(size: 22, weight: .semibold))
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    isWorkoutEditorPresented = true
+                } label: {
+                    Image(systemName: "plus")
+                }
+                .accessibilityLabel("Add workout")
+            }
         }
         .task {
             await viewModel.load()
-        }
-        .overlay(alignment: .bottomTrailing) {
-            Button {
-                isWorkoutEditorPresented = true
-            } label: {
-                Image(systemName: "plus")
-                    .font(.system(size: 28, weight: .medium))
-                    .foregroundStyle(.white)
-                    .frame(width: 65, height: 65)
-                    .background(
-                        LinearGradient(
-                            stops: [
-                                .init(color: Color(red: 51 / 255, green: 98 / 255, blue: 159 / 255), location: 0),
-                                .init(color: Color(red: 57 / 255, green: 129 / 255, blue: 224 / 255), location: 0.65)
-                            ],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        ),
-                        in: Circle()
-                    )
-            }
-            .buttonStyle(AddWorkoutButtonStyle())
-            .accessibilityLabel("Add workout")
-            .padding(24)
         }
         .sheet(isPresented: $isWorkoutEditorPresented) {
             WorkoutEditorView(
@@ -105,19 +88,5 @@ struct WorkoutsView: View {
             .presentationBackground(.white)
             .presentationDetents([.medium, .large])
         }
-    }
-}
-
-private struct AddWorkoutButtonStyle: ButtonStyle {
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .brightness(configuration.isPressed ? -0.06 : 0)
-            .scaleEffect(configuration.isPressed && !reduceMotion ? 0.94 : 1)
-            .animation(
-                reduceMotion ? nil : .easeOut(duration: 0.15),
-                value: configuration.isPressed
-            )
     }
 }

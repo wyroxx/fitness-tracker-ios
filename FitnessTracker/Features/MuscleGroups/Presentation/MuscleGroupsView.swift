@@ -66,14 +66,14 @@ struct MuscleGroupsView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
+            ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     dismiss()
                 } label: {
-                    Image(systemName: "chevron.left")
+                    Image(systemName: "xmark")
                         .font(.system(size: 17, weight: .semibold))
                 }
-                .accessibilityLabel("Back")
+                .accessibilityLabel("Close exercise selection")
             }
             
             ToolbarItem(placement: .principal) {

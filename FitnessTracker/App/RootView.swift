@@ -16,19 +16,11 @@ struct RootView: View {
             AuthFlowView(repository: authRepository, sessionStore: sessionStore)
 
         case .signedIn:
-            NavigationStack {
-                WorkoutsView(
-                    viewModel: WorkoutsViewModel(
-                        workouts: [],
-                        repository: workoutRepository
-                    ),
-                    muscleGroupsViewModel: MuscleGroupsViewModel(
-                        repository: muscleGroupRepository
-                    ),
-                    exerciseRepository: exerciseRepository,
-                    workoutRepository: workoutRepository
-                )
-            }
+            MainView(
+                exerciseRepository: exerciseRepository,
+                muscleGroupRepository: muscleGroupRepository,
+                workoutRepository: workoutRepository
+            )
         }
     }
 }

@@ -2,8 +2,7 @@ import SwiftUI
 
 @main
 struct FitnessTrackerApp: App {
-    // Start signed out until session restoration is implemented.
-    @State private var sessionStore = SessionStore(state: .signedOut)
+    @State private var sessionStore = SessionStore(state: .unknown)
 
     private let authRepository: AuthRepository
     private let exerciseRepository: ExerciseRepository
